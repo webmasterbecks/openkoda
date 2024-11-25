@@ -14,7 +14,7 @@ services:
       APPLICATION_ADMIN_EMAIL: ${APPLICATION_ADMIN_EMAIL:-admin@yourdomain.org}
       INIT_ADMIN_USERNAME: ${INIT_ADMIN_USERNAME:-admin}
       INIT_ADMIN_PASSWORD: ${INIT_ADMIN_PASSWORD:-admin123}
-      INIT_ADMIN_FIRSTNAME: ${INIT_ADMIN_FIRSTNAME:-Mark}
+      INIT_ADMIN_FIRSTNAME: ${INIT_ADMIN_FIRSTNAME:-System}
       INIT_ADMIN_LASTNAME: ${INIT_ADMIN_LASTNAME:-Administrator}
       INIT_EXTERNAL_SCRIPT: ${INIT_EXTERNAL_SCRIPT}
       FILE_STORAGE_FILESYSTEM_PATH: ${FILE_STORAGE_FILESYSTEM_PATH:-/data}
@@ -41,3 +41,10 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+volumes:
+  postgres-data: {}
+
+volumes:
+  - postgres-data:/var/lib/postgresql/data
+
+      
