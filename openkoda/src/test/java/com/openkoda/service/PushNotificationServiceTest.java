@@ -31,8 +31,10 @@ import com.openkoda.model.User;
 import com.openkoda.model.notification.Notification;
 import com.openkoda.model.task.Email;
 import com.openkoda.model.task.HttpRequestTask;
+import org.mockito.ArgumentCaptor;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Collections;
@@ -236,7 +238,7 @@ public class PushNotificationServiceTest extends AbstractTest {
 
     @Test
     public void whenCreateOrganizationNotificationEmailSent() {
-//        given
+        //        given
         long organizationId = 1L;
         NotificationDto notificationDto = new NotificationDto("message", Notification.NotificationType.SUCCESS, organizationId, null);
         notificationDto.propagate = Boolean.TRUE;
@@ -256,5 +258,23 @@ public class PushNotificationServiceTest extends AbstractTest {
 //        then
         verify(userRoleRepository, times(1)).getUsersInOrganization(anyLong());
         verify(emailRepository, times(1)).saveAll(any(List.class));
+    }
+
+    @Test
+    public void slackMessageIsEscaped() {
+        long organizationId = 1L;
+        String message = "\"quoted\" message";
+        NotificationDto notificationDto = new NotificationDto(message, Notification.NotificationType.SUCCESS, organizationId, null);
+        notificationDto.propagate = Boolean.TRUE;
+        IntegrationModuleOrganizationConfiguration configuration = prepareIntegrationModuleOrganizationConfiguration(organizationId);
+
+        when(integrationService.getOrganizationConfiguration(organizationId)).thenReturn(configuration);
+
+        pushNotificationService.createSlackPostMessageRequest(notificationDto);
+
+        ArgumentCaptor<HttpRequestTask> captor = ArgumentCaptor.forClass(HttpRequestTask.class);
+        verify(httpRequestTaskRepository).save(captor.capture());
+        String json = captor.getValue().getJson();
+        Assertions.assertTrue(json.contains("\\\"quoted\\\" message"));
     }
 }
