@@ -62,9 +62,11 @@ public class PushNotificationService extends IntegrationComponentProvider {
                     String linkHref = StringUtils.substringBetween(notification.getMessage(), "<a href=\"", "\">");
                     String msgWithRemovedAnchorTag = notification.getMessage().substring(0, notification.getMessage().indexOf("<a href=\""));
                     requestJson = String.format("{\"text\":\"%s\",\"attachments\":[{\"title\":\"%s\",\"title_link\":\"%s\"}]}",
-                            msgWithRemovedAnchorTag, linkTitle, linkHref);
+                            StringUtils.replace(msgWithRemovedAnchorTag, "\"", "\\\""),
+                            StringUtils.replace(linkTitle, "\"", "\\\""),
+                            StringUtils.replace(linkHref, "\"", "\\\""));
                 } else {
-                    requestJson = String.format("{\"text\":\"%s\"}", notification.getMessage());
+                    requestJson = String.format("{\"text\":\"%s\"}", StringUtils.replace(notification.getMessage(), "\"", "\\\""));
                 }
                 requestJson = requestJson.replaceAll("<br/>", "");
                 debug("Creating Slack push message for organization notification");
