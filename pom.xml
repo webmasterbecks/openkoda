@@ -23,6 +23,7 @@
     <modules>
         <module>openkoda-app</module>
         <module>openkoda</module>
+        <module>examples/omnicomms</module>
     </modules>
 
     <licenses>
